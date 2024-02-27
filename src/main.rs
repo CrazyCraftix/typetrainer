@@ -11,6 +11,9 @@ struct Args {
 }
 
 fn main() {
+    let mut prompts_completed: u32 = 0;
+    let mut mistakes: u32 = 0;
+
     let args = Args::parse();
 
     let mut rng: Box<dyn RngCore> = args.seed.map_or(Box::new(thread_rng()) as Box<dyn RngCore>, |seed| Box::new(ChaChaRng::seed_from_u64(seed)));
@@ -24,6 +27,7 @@ fn main() {
         }
 
         loop {
+            println!("completed: {}, mistakes were made: {}", prompts_completed, mistakes);
             println!("'{}'", word);
             print!(" ");
 
@@ -35,9 +39,11 @@ fn main() {
 
             if word == input {
                 print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+                prompts_completed += 1;
                 break;
             }
             println!("wrong!");
+            mistakes += 1;
         }
     }
 }
