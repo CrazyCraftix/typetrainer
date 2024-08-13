@@ -16,7 +16,11 @@ fn main() {
 
     let args = Args::parse();
 
-    let mut rng: Box<dyn RngCore> = args.seed.map_or(Box::new(thread_rng()) as Box<dyn RngCore>, |seed| Box::new(ChaChaRng::seed_from_u64(seed)));
+    let mut rng: Box<dyn RngCore> = args
+        .seed
+        .map_or(Box::new(thread_rng()) as Box<dyn RngCore>, |seed| {
+            Box::new(ChaChaRng::seed_from_u64(seed))
+        });
 
     let mut chars: Vec<char> = args.characters.chars().collect();
     loop {
@@ -27,9 +31,12 @@ fn main() {
         }
 
         loop {
-            println!("completed: {}, mistakes were made: {}", prompts_completed, mistakes);
-            println!("'{}'", word);
-            print!(" ");
+            println!(
+                "completed: {}, mistakes were made: {}",
+                prompts_completed, mistakes
+            );
+            println!("{:_<1$}", "", args.count as usize);
+            println!("{}", word);
 
             io::stdout().flush().unwrap();
 
