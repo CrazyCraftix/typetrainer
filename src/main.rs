@@ -6,7 +6,7 @@ use std::io::{self, Write};
 #[derive(Parser)]
 struct Args {
     characters: String,
-    count: u32,
+    count: usize,
     seed: Option<u64>,
 }
 
@@ -25,9 +25,14 @@ fn main() {
     let mut chars: Vec<char> = args.characters.chars().collect();
     loop {
         let mut word = String::new();
-        for _ in 0..args.count {
+        while word.len() < args.count {
             chars.shuffle(&mut rng);
             word += &chars.get(0).unwrap().to_string();
+            if word.len() == 1 {
+                word = word.trim_start().into();
+            } else if word.len() == args.count {
+                word = word.trim_end().into();
+            }
         }
 
         loop {
@@ -35,8 +40,11 @@ fn main() {
                 "completed: {}, mistakes were made: {}",
                 prompts_completed, mistakes
             );
-            println!("{:_<1$}", "", args.count as usize);
+            println!("{:-<1$}", "", args.count as usize);
             println!("{}", word);
+            println!("");
+            println!("{:-<1$}", "", args.count as usize);
+            println!("{esc}[3F", esc = 27 as char);
 
             io::stdout().flush().unwrap();
 
